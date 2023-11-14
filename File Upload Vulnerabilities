@@ -1,3 +1,6 @@
+
+//Controller kiểm soát việc định dạng tải tệp của 1 ASP.net mvc
+
 using System;
 using System.IO;
 using System.Web;
@@ -37,3 +40,26 @@ public class FileUploadController : Controller
         return View("Index");
     }
 }
+
+
+// Và View của nó
+
+@{
+    ViewBag.Title = "Upload File";
+}
+
+<h2>Upload File</h2>
+
+@using (Html.BeginForm("UploadFile", "FileUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="file" name="file" />
+    <input type="submit" value="Upload" />
+
+    @if (ViewBag.Message != null)
+    {
+        <p>@ViewBag.Message</p>
+    }
+}
+
