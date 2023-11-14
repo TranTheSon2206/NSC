@@ -1,4 +1,4 @@
-//Các câu lệnh trước khi được tham số hóa dễ bị tấn công SQL Injection
+//Các câu lệnh của một JDBC trước khi được tham số hóa dễ bị tấn công SQL Injection
 
 import java.sql.Connection;
 import java.sql.DriverManager;
