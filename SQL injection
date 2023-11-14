@@ -1,0 +1,85 @@
+//Các câu lệnh trước khi được tham số hóa dễ bị tấn công SQL Injection
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class SQLInjectionExample {
+
+    public static void main(String[] args) {
+        try {
+            // Kết nối đến cơ sở dữ liệu
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "username", "password");
+
+            // Lấy dữ liệu từ tham số người dùng (nguy cơ SQL injection)
+            String userInput = "admin'; DROP TABLE users; --";
+
+            // Truy vấn SQL không an toàn (vulnerable to SQL injection)
+            String sqlQuery = "SELECT * FROM users WHERE username = '" + userInput + "'";
+            
+            // Thực thi truy vấn
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+            // Xử lý kết quả
+            while (resultSet.next()) {
+                System.out.println("User ID: " + resultSet.getInt("id") + ", Username: " + resultSet.getString("username"));
+            }
+
+            // Đóng tài nguyên
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+//Và sau khi tham số hóa
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class SafeSQLExample {
+
+    public static void main(String[] args) {
+        try {
+            // Kết nối đến cơ sở dữ liệu
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "username", "password");
+
+            // Lấy dữ liệu từ tham số người dùng (an toàn với SQL injection)
+            String userInput = "admin'; DROP TABLE users; --";
+
+            // Truy vấn SQL an toàn với tham số hóa
+            String sqlQuery = "SELECT * FROM users WHERE username = ?";
+            
+            // Sử dụng PreparedStatement để thực hiện truy vấn an toàn với tham số hóa
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+            preparedStatement.setString(1, userInput);
+
+            // Thực thi truy vấn
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Xử lý kết quả
+            while (resultSet.next()) {
+                System.out.println("User ID: " + resultSet.getInt("id") + ", Username: " + resultSet.getString("username"));
+            }
+
+            // Đóng tài nguyên
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
