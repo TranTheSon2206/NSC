@@ -1,0 +1,39 @@
+using System;
+using System.IO;
+using System.Web;
+using System.Web.Mvc;
+
+public class FileUploadController : Controller
+{
+    public ActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public ActionResult UploadFile(HttpPostedFileBase file)
+    {
+        if (file != null)
+        {
+            string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            // Danh sách các phần mở rộng tệp cho phép (ví dụ: hình ảnh)
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+
+            if (Array.Exists(allowedExtensions, ext => ext == fileExtension))
+            {
+                // Xử lý tệp tải lên ở đây (ví dụ: lưu tệp, xử lý, vv.)
+                string filePath = Path.Combine(Server.MapPath("~/uploads"), file.FileName);
+                file.SaveAs(filePath);
+
+                ViewBag.Message = "Tệp đã được tải lên thành công.";
+            }
+            else
+            {
+                ViewBag.Message = "Tệp không hợp lệ. Chỉ cho phép tải lên các tệp hình ảnh.";
+            }
+        }
+
+        return View("Index");
+    }
+}
